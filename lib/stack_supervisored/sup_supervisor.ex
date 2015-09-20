@@ -3,7 +3,7 @@ defmodule StackSupervisored.SupSupervisor do
   use Supervisor
 
   def start_link(state_pid) do
-    IO.pust "start supsupervisor"
+    IO.puts "start supsupervisor"
     {:ok, _pid} = Supervisor.start_link(__MODULE__, state_pid)
   end
   
