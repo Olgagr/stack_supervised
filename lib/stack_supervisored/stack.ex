@@ -3,8 +3,8 @@ defmodule StackSupervisored.Stack do
   use GenServer
 
   ### Public API
-  def start_link(state_pid) do
-    GenServer.start_link(__MODULE__, state_pid, name: __MODULE__)
+  def start_link() do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   def pop do
@@ -17,21 +17,21 @@ defmodule StackSupervisored.Stack do
   
   ### GenServer API
 
-  def init(state_pid) do
-    current_state = StackSupervisored.StackState.get_state(state_pid)
-    {:ok, {current_state, state_pid}}
+  def init() do
+    current_state = StackSupervisored.StackState.get_state()
+    {:ok, current_state}
   end
   
-  def handle_call({:pop}, _from, {current_state, state_pid}) do
-    {:reply, {current_state, state_pid}}
+  def handle_call({:pop}, _from, [h|t]) do
+    {:reply, h, t}
   end
   
-  def handle_cast({:push, item}, {current_state, state_pid}) do
-    {:noreply, {current_state ++ [item], state_pid}}
+  def handle_cast({:push, item}, current_state) do
+    {:noreply, current_state ++ [item]}
   end
 
-  def terminate(_reason, {current_state, state_pid}) do
-    StackSupervisored.StackState.save_state(state_pid, current_state)
+  def terminate(_reason, current_state) do
+    StackSupervisored.StackState.save_state(current_state)
   end
   
 

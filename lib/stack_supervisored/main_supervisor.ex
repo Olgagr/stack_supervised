@@ -3,18 +3,15 @@ defmodule StackSupervisored.MainSupervisor do
   use Supervisor
 
   def start_link(list) do
-    result = {:ok, sup} = Supervisor.start_link(__MODULE__, [list])
-    start_workers(sup, list)
-    result
+    {:ok, _pid} = Supervisor.start_link(__MODULE__, [list])
   end
 
-  def start_workers(sup, list) do
-    {:ok, state_pid} = Supervisor.start_child(sup, worker(StackSupervisored.StackState, [list]))
-    Supervisor.start_child(sup, supervisor(StackSupervisored.SupSupervisor, [state_pid]))
-  end
-
-  def init(_) do
-    supervise([], strategy: :one_for_one)
+  def init(list) do
+    children = [
+      worker(StackSupervisored.StackState, [list]),
+      supervisor(StackSupervisored.SupSupervisor, [])
+    ]
+    supervise(children, strategy: :one_for_one)
   end
 
 end

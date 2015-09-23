@@ -5,16 +5,15 @@ defmodule StackSupervisored.StackState do
   ### Public API
 
   def start_link(list) do
-     IO.puts "init state"
-    {:ok, _pid} = GenServer.start_link(__MODULE__, list)    
+    {:ok, _pid} = GenServer.start_link(__MODULE__, list, name: :stack_state)
   end
 
-  def save_state(pid, list) do
-    GenServer.cast(pid, {:save_state, list})
+  def save_state(list) do
+    GenServer.cast(self, {:save_state, list})
   end
 
-  def get_state(pid) do
-    GenServer.call(pid, :get_state)
+  def get_state() do
+    GenServer.call(self, :get_state)
   end
   
   ### GenServer API

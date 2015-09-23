@@ -2,13 +2,12 @@ defmodule StackSupervisored.SupSupervisor do
   
   use Supervisor
 
-  def start_link(state_pid) do
-    IO.pust "start supsupervisor"
-    {:ok, _pid} = Supervisor.start_link(__MODULE__, state_pid)
+  def start_link() do
+    {:ok, _pid} = Supervisor.start_link(__MODULE__, [])
   end
   
-  def init(state_pid) do
-    children = [worker(StackSupervisored.Stack, [state_pid])]
+  def init(_) do
+    children = [worker(StackSupervisored.Stack, [])]
     supervise(children, strategy: :one_for_one)
   end
 
